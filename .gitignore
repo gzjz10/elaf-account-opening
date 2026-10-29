@@ -1,0 +1,4 @@
+dev/local-db.json
+dev/uploads/
+.DS_Store
+node_modules/
