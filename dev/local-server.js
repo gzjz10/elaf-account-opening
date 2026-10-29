@@ -141,7 +141,7 @@ http.createServer((req, res) => {
   const file = path.join(ROOT, rel);
   if (!file.startsWith(ROOT) || !fs.existsSync(file) || fs.statSync(file).isDirectory()) { res.writeHead(404); return res.end('not found'); }
   let data = fs.readFileSync(file);
-  if (rel === 'index.html') data = data.toString().replace('const API_URL = "";', `const API_URL = "http://localhost:${PORT}/api";`);
+  if (rel === 'index.html') data = data.toString().replace(/const API_URL = "[^"]*";/, `const API_URL = "http://localhost:${PORT}/api";`);
   res.writeHead(200, { 'Content-Type': TYPES[path.extname(file)] || 'application/octet-stream' });
   res.end(data);
 }).listen(PORT, () => console.log(`Local server: http://localhost:${PORT}`));
