@@ -406,7 +406,7 @@ function setup() {
     sh.setFrozenRows(1);
     sh.autoResizeColumns(1, titles.length);
   });
-  var def = ss.getSheetByName('Sheet1') || ss.getSheetByName('ورقة1');
+  var def = ss.getSheetByName('Sheet1') || ss.getSheetByName('ورقة1') || ss.getSheetByName('الورقة1');
   if (def && def.getLastRow() === 0 && ss.getSheets().length > 1) ss.deleteSheet(def);
 
   // الأعمدة التقنية تبقى موجودة بس مخفية، عشان الشيت يبان مرتب للإدارة.
@@ -445,9 +445,31 @@ function resetAdminPassword() {
   try { SpreadsheetApp.getUi().alert('كلمة مرور admin الجديدة: ' + pw); } catch (e) {}
 }
 
+// حسابات الأقسام الأساسية: تنشئ الناقص منها بكلمات مرور عشوائية تطلع في سجل التنفيذ.
+function createStarterUsers() {
+  var starters = [
+    ['procurement', 'المشتريات', 'department', 0],
+    ['idara', 'الإدارة', 'department', 1],
+    ['accounts', 'الحسابات', 'department', 2],
+    ['vouchers', 'السندات', 'department', 3],
+    ['viewer', 'مشاهد', 'viewer', '']
+  ];
+  var lines = [];
+  starters.forEach(function (s) {
+    if (findUser_(s[0])) { lines.push(s[0] + ' : موجود من قبل'); return; }
+    var pw = randomPassword_(), salt = newSalt_();
+    appendRows_('users', [userRow_(s[0], s[1], s[2], s[3], salt, hash_(salt, pw))]);
+    lines.push(s[0] + ' / ' + pw + '  (' + s[1] + ')');
+  });
+  var msg = 'حسابات الأقسام:\n' + lines.join('\n');
+  Logger.log(msg);
+  try { SpreadsheetApp.getUi().alert(msg); } catch (e) {}
+}
+
 function onOpen() {
   SpreadsheetApp.getUi().createMenu('إيلاف')
     .addItem('إعداد / إصلاح التبويبات', 'setup')
     .addItem('إعادة تعيين كلمة مرور admin', 'resetAdminPassword')
+    .addItem('إنشاء حسابات الأقسام', 'createStarterUsers')
     .addToUi();
 }
