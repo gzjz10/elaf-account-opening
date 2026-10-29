@@ -383,7 +383,8 @@ function isoStr_(v) {
 }
 
 function dateStr_(v) {
-  if (v instanceof Date) return Utilities.formatDate(v, Session.getScriptTimeZone(), 'yyyy-MM-dd');
+  // نفس منطقة الشيت (setup يضبطها على الرياض) — مو منطقة مشروع السكربت، عشان التاريخ ما ينزاح يوم
+  if (v instanceof Date) return Utilities.formatDate(v, SpreadsheetApp.getActive().getSpreadsheetTimeZone(), 'yyyy-MM-dd');
   return v ? String(v) : '';
 }
 
@@ -413,10 +414,10 @@ function setup() {
   hideCols_('history', ['txId']);
   hideCols_('files', ['txId']);
   hideCols_('users', ['role', 'department', 'salt', 'hash']);
-  sheet_('tx').getRange(2, colIndex_('tx', 'date'), 999, 1).setNumberFormat('yyyy-mm-dd');
+  sheet_('tx').getRange(2, colIndex_('tx', 'date'), sheet_('tx').getMaxRows() - 1, 1).setNumberFormat('yyyy-mm-dd');
   // نص صريح عشان الشيت ما يحذف الأصفار من بداية الأرقام
-  sheet_('tx').getRange(2, colIndex_('tx', 'txnum'), 999, 1).setNumberFormat('@');
-  sheet_('users').getRange(2, 1, 999, 1).setNumberFormat('@');
+  sheet_('tx').getRange(2, colIndex_('tx', 'txnum'), sheet_('tx').getMaxRows() - 1, 1).setNumberFormat('@');
+  sheet_('users').getRange(2, 1, sheet_('users').getMaxRows() - 1, 1).setNumberFormat('@');
 
   // حساب admin: لو مو موجود ننشئه بكلمة مرور عشوائية تطلع في سجل التنفيذ.
   if (!findUser_('admin')) {

@@ -41,6 +41,7 @@ function makeSheet(name) {
   const sheet = {
     getName: () => name,
     getLastRow: () => d().rows.length,
+    getMaxRows: () => Math.max(1000, d().rows.length),
     getRange: (r, c, nr = 1, nc = 1) => {
       const range = {
         getValues: () => Array.from({ length: nr }, (_, i) => Array.from({ length: nc }, (_, j) => {
@@ -87,6 +88,7 @@ const sandbox = {
       getSheets: () => state.order.map(makeSheet),
       deleteSheet: (s) => { delete state.sheets[s.getName()]; state.order = state.order.filter(x => x !== s.getName()); },
       setSpreadsheetTimeZone: () => {},
+      getSpreadsheetTimeZone: () => 'Asia/Riyadh',
     }),
     getUi: () => { throw new Error('no UI in local server'); },
   },
